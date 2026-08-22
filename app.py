@@ -149,7 +149,7 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('RGB')
     img_array = np.array(image)
 
-    st.image(image, caption="Uploaded Screenshot", use_column_width=True)
+    st.image(image, caption="Uploaded Screenshot", use_container_width=True)
 
     with st.spinner("Analyzing..."):
         model = load_model()
