@@ -1,6 +1,5 @@
 # Large files
 dataset/
-model/*.pth
 *.pth
 
 # Jupyter checkpoints
