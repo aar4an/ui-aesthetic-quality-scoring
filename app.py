@@ -18,7 +18,7 @@ def load_model():
     model = models.resnet18(weights=None)
     model.fc = nn.Linear(512, 3)
     model.load_state_dict(torch.load(
-        r"C:\Projects\Internship_Learning\model\best_model.pth",
+            "model/best_model.pth",
         map_location=torch.device('cpu')
     ))
     model.eval()
