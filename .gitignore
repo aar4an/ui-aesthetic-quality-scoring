@@ -1,0 +1,18 @@
+# Large files
+dataset/
+model/*.pth
+*.pth
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
