@@ -1,7 +1,7 @@
 numpy
 pandas
 matplotlib
-opencv-python
+opencv-python-headless
 Pillow
 scikit-learn
 torch
