@@ -1,6 +1,6 @@
 # Large files
 dataset/
-*.pth
+
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
