@@ -46,7 +46,7 @@ Built during a summer internship (academic mentor: Unmesh Shukla, University of 
 
 5\. ResNet18 transfer learning: frozen backbone + fc, and layer4 fine-tuned
 
-6\. Rule-based design feedback
+6\. 6. Rule-based design feedback: simple hints (contrast, brightness, empty space, edges, saturation, text density) compared against the 15th/85th percentile of the training screenshots (`feedback\_rules.py`, `feedback\_thresholds.json`, built by `make\_thresholds.py`). The same module is used by the app and notebook 07.
 
 7\. Streamlit web app (uses the layer4 fine-tuned ResNet18)
 
@@ -114,6 +114,8 @@ Built during a summer internship (academic mentor: Unmesh Shukla, University of 
 
 \- Rule-based feedback uses simple heuristics and can disagree with the model prediction
 
+\- Rule-based feedback is weakly related to the labels (some rules fire on Good, Average and Poor pages at similar rates), so treat it as hints, not a quality score. It is separate from the model prediction and can disagree with it
+
 
 
 \## Future Work
@@ -127,6 +129,4 @@ Built during a summer internship (academic mentor: Unmesh Shukla, University of 
 \- Full-page and mobile screenshots
 
 \- UIED for UI element detection
-
-\- Re-run notebook 07 (feedback generation) on the final dataset
 
