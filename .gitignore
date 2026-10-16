@@ -1,6 +1,20 @@
-# Large files
+# Datasets (size + NSFW risk) - GitHub pe kabhi nahi
 dataset/
+dataset_final/
+dataset_new/
+dup_preview/
+top-1m.csv
+*.npz
 
+# Model weights: sab ignore, sirf app wala v2 model allow
+model/*.pth
+!model/resnet18_layer4_ft_v2_best.pth
+
+# Local tool/junk folders
+.claude/
+CLAUDE.md
+graphify-out/
+check_app_model.py
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
@@ -15,3 +29,4 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+urls*.csv

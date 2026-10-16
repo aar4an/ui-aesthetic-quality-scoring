@@ -1,0 +1,9 @@
+-r requirements.txt
+pandas
+matplotlib
+scikit-learn
+scikit-image
+seaborn
+tqdm
+joblib
+playwright

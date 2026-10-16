@@ -1,0 +1,7 @@
+Model,old (n=30),b1 (n=19),b2 (n=42),b3 (n=56)
+Logistic Regression,53.1,46.6,40.4,41.2
+Random Forest,30.9,34.8,29.5,36.3
+SVM (RBF),47.5,39.4,33.8,38.1
+CNN from scratch,38.3,42.1,33.2,37.4
+ResNet18 frozen + fc,37.1,53.0,54.6,58.3
+ResNet18 layer4 fine-tuned,51.1,51.6,47.6,58.1

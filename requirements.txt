@@ -1,13 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit
 numpy
-pandas
-matplotlib
-opencv-python-headless
 Pillow
-scikit-learn
+opencv-python-headless
 torch
 torchvision
-streamlit
-scikit-image
-seaborn
-tqdm
-joblib

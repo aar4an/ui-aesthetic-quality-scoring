@@ -1,0 +1,7 @@
+Model,Val F1 (%),Test Acc (%),Test Macro F1 (%),Old Acc (%),Old F1 (%),95% CI (+/- %),Val-Test gap (F1)
+Logistic Regression,44.26,45.58,45.22,35.0,35.5,8.1,-1.0
+Random Forest,48.4,36.05,35.97,50.0,50.36,7.8,12.4
+SVM (RBF),45.61,40.14,39.8,50.0,52.42,7.9,5.8
+CNN from scratch,46.71,38.1,37.72,37.5,37.0,7.9,9.0
+ResNet18 frozen + fc,49.54,52.38,52.65,67.5,67.36,8.1,-3.1
+ResNet18 layer4 fine-tuned,57.46,53.06,53.2,,,8.1,4.3
