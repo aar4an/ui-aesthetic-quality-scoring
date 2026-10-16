@@ -7,6 +7,9 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 
+# Shared module: feature extraction + percentile-based feedback rules (notebook 02/06 jaisa)
+import feedback_rules as fr
+
 # ─── Page Config ───────────────────────────────────────
 st.set_page_config(
     page_title="UI Aesthetic Scorer",
@@ -66,90 +69,6 @@ def load_model():
     return front, head
 
 
-# ─── Feature Extraction (rule-based feedback ke liye) ──
-def extract_features(img_array):
-    img_resized = cv2.resize(img_array, (224, 224))
-    gray = cv2.cvtColor(img_resized, cv2.COLOR_RGB2GRAY)
-    hsv = cv2.cvtColor(img_resized, cv2.COLOR_RGB2HSV)
-
-    brightness = round(float(np.mean(gray)), 2)
-    contrast = round(float(np.std(gray)), 2)
-    edges = cv2.Canny(gray, 50, 150)
-    edge_density = round(float(np.sum(edges > 0) / edges.size * 100), 2)
-    whitespace_ratio = round(float(np.sum(gray > 200) / gray.size * 100), 2)
-    saturation_mean = round(float(np.mean(hsv[:, :, 1])), 2)
-    laplacian = cv2.Laplacian(gray, cv2.CV_64F)
-    sharpness = round(float(laplacian.var()), 2)
-
-    _, thresh = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY_INV)
-    kernel = np.ones((3, 3), np.uint8)
-    thresh = cv2.dilate(thresh, kernel, iterations=1)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    valid_contours = [c for c in contours if cv2.contourArea(c) > 100]
-    num_blocks = len(valid_contours)
-    text_like = sum(1 for c in valid_contours if cv2.contourArea(c) < 500)
-    block_density = round(sum(cv2.contourArea(c) for c in valid_contours) / (224 * 224) * 100, 2)
-    clutter_score = round((block_density * 0.5) + (text_like * 0.5), 2)
-
-    h, w = gray.shape
-    left_blocks = sum(1 for c in valid_contours if cv2.boundingRect(c)[0] < w // 2)
-    right_blocks = num_blocks - left_blocks
-    lr_balance = round(abs(left_blocks - right_blocks) / (num_blocks + 1e-5), 2)
-
-    return {
-        'brightness': brightness,
-        'contrast': contrast,
-        'edge_density': edge_density,
-        'whitespace_ratio': whitespace_ratio,
-        'saturation_mean': saturation_mean,
-        'sharpness': sharpness,
-        'clutter_score_layout': clutter_score,
-        'lr_balance': lr_balance,
-        'text_like_regions': text_like
-    }
-
-
-# ─── Feedback Generation (rule-based) ──────────────────
-def generate_feedback(features):
-    feedback = []
-
-    if features['edge_density'] > 15:
-        feedback.append("The webpage appears visually cluttered due to high edge density.")
-    elif features['edge_density'] < 5:
-        feedback.append("The webpage has a clean and minimal layout with low visual complexity.")
-
-    if features['contrast'] < 30:
-        feedback.append("The page may have readability issues due to low contrast between elements.")
-    elif features['contrast'] > 70:
-        feedback.append("The page has strong contrast, making elements easy to distinguish.")
-
-    if features['brightness'] > 200:
-        feedback.append("The page is very bright. Consider adding visual accents to guide the eye.")
-    elif features['brightness'] < 80:
-        feedback.append("The page uses a dark theme. Ensure text contrast remains accessible.")
-
-    if features['whitespace_ratio'] < 20:
-        feedback.append("The layout feels cramped. Consider adding more whitespace between elements.")
-    elif features['whitespace_ratio'] > 60:
-        feedback.append("The page has good whitespace, giving a clean and breathable feel.")
-
-    if features['saturation_mean'] < 50:
-        feedback.append("Colors appear muted. Consider adding accent colors for visual interest.")
-    elif features['saturation_mean'] > 150:
-        feedback.append("Colors are very vivid. High saturation may feel visually overwhelming.")
-
-    if features['lr_balance'] > 0.5:
-        feedback.append("Visual elements are unevenly distributed left to right across the page.")
-
-    if features['clutter_score_layout'] > 30:
-        feedback.append("The overall layout appears cluttered with too many visual blocks.")
-
-    if features['text_like_regions'] > 10:
-        feedback.append("Too many text-dense regions. Consider breaking content into sections.")
-
-    return feedback[:5]
-
-
 # ─── Prediction ────────────────────────────────────────
 # Training jaisa preprocessing: RGB -> 224x224 BILINEAR (squash) -> /255 -> ImageNet normalize
 TRANSFORM = transforms.Compose([
@@ -179,22 +98,25 @@ st.markdown("Upload a webpage screenshot to get an aesthetic quality score and d
 st.caption(
     "Model: ResNet18 (layer4 fine-tuned), trained on 979 labelled screenshots. "
     "Test accuracy ~53% (3 classes, chance = 33%). Labels are subjective and from a single annotator, "
-    "so treat the result as a rough guide, not a verdict."
+    "so treat the result as a rough guide, not a verdict. "
+    "Best results with a desktop viewport screenshot (about 1900x968, above the fold)."
 )
 
 uploaded_file = st.file_uploader("Upload Webpage Screenshot", type=['png', 'jpg', 'jpeg'])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert('RGB')
-    img_array = np.array(image)
 
     st.image(image, caption="Uploaded Screenshot", use_container_width=True)
 
     with st.spinner("Analyzing..."):
         model_parts = load_model()
         pred_label, confidence, probs = predict(image, model_parts)
-        features = extract_features(img_array)
-        feedback = generate_feedback(features)
+
+        # PIL RGB -> OpenCV BGR (feedback_rules cv2 format expect karta hai)
+        img_bgr = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        features = fr.extract_features(img_bgr)
+        feedback = fr.generate_feedback(features)
 
     # Prediction
     st.markdown("---")
@@ -211,11 +133,15 @@ if uploaded_file is not None:
     # Design Feedback
     st.markdown("---")
     st.subheader("Design Feedback")
+    st.caption(
+        "Simple rule-based hints, compared against the typical range of the training screenshots. "
+        "They are separate from the model prediction and can disagree with it."
+    )
     if feedback:
         for i, point in enumerate(feedback, 1):
             st.write(f"{i}. {point}")
     else:
-        st.write("No specific issues detected by the rule-based checks.")
+        st.write("Nothing unusual compared to typical pages in the training data.")
 
     # Feature Values
     st.markdown("---")
@@ -225,9 +151,7 @@ if uploaded_file is not None:
         st.metric("Brightness", features['brightness'])
         st.metric("Contrast", features['contrast'])
         st.metric("Edge Density", f"{features['edge_density']}%")
-        st.metric("Whitespace Ratio", f"{features['whitespace_ratio']}%")
     with col2:
         st.metric("Saturation", features['saturation_mean'])
-        st.metric("Sharpness", features['sharpness'])
-        st.metric("Clutter Score", features['clutter_score_layout'])
-        st.metric("L-R Balance", features['lr_balance'])
+        st.metric("Light Empty Space", f"{features['whitespace_ratio']}%")
+        st.metric("Text-like Regions", features['text_like_regions'])

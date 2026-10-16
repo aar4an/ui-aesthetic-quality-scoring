@@ -30,3 +30,7 @@ env/
 .DS_Store
 Thumbs.db
 urls*.csv
+fix_07.py
+check_scale.py
+check_rules.py
+notebooks/07_feedback_generation_old_backup.ipynb

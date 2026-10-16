@@ -1,0 +1,41 @@
+{
+  "source": "train split percentiles (p15/p85), edge_density and whitespace_ratio in percent",
+  "thresholds": {
+    "brightness": {
+      "p15": 85.1682,
+      "p85": 227.4867
+    },
+    "contrast": {
+      "p15": 42.8772,
+      "p85": 89.2818
+    },
+    "edge_density": {
+      "p15": 1.7693,
+      "p85": 5.4411
+    },
+    "whitespace_ratio": {
+      "p15": 3.6827,
+      "p85": 75.0739
+    },
+    "saturation_mean": {
+      "p15": 16.2049,
+      "p85": 111.2125
+    },
+    "lr_balance": {
+      "p15": 0.2,
+      "p85": 1.0
+    },
+    "tb_balance": {
+      "p15": 0.14,
+      "p85": 1.0
+    },
+    "text_like_regions": {
+      "p15": 0.0,
+      "p85": 9.0
+    },
+    "layout_clutter_score": {
+      "p15": 12.806,
+      "p85": 48.622
+    }
+  }
+}
