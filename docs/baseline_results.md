@@ -1,3 +1,6 @@
+<!-- historical-note -->
+> **Historical note (October 2026):** this file describes an earlier version of the project (50-image or 200-image dataset). The numbers here are outdated and, for the old ResNet18 result, affected by test-set leakage. Current results (979 images, fixed train/val/test split) are in the project `README.md` and `docs/results_comparison_v2.csv`. Data preparation details are in `docs/data_preparation_and_tool_usage.md`.
+
 # Baseline ML Classifier Results
 
 ## 1. Model Performance Summary

@@ -1,3 +1,6 @@
+<!-- historical-note -->
+> **Historical note (October 2026):** the rules below are the original fixed-threshold version. They assumed edge density and whitespace in percent while the dataset stores fractions, so they did not separate the classes. The current rules are percentile-based (15th/85th percentile of the train split) and live in `feedback_rules.py` and `feedback_thresholds.json`, used by both the app and notebook 07.
+
 # Feedback Rules
 
 ## Overview
