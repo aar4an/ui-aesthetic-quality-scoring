@@ -46,7 +46,7 @@ Built during a summer internship (academic mentor: Unmesh Shukla, University of 
 
 5\. ResNet18 transfer learning: frozen backbone + fc, and layer4 fine-tuned
 
-6\. 6. Rule-based design feedback: simple hints (contrast, brightness, empty space, edges, saturation, text density) compared against the 15th/85th percentile of the training screenshots (`feedback\_rules.py`, `feedback\_thresholds.json`, built by `make\_thresholds.py`). The same module is used by the app and notebook 07.
+6. Rule-based design feedback: simple hints (contrast, brightness, empty space, edges, saturation, text density) compared against the 15th/85th percentile of the training screenshots (`feedback_rules.py`, `feedback_thresholds.json`, built by `scripts/make_thresholds.py`). The same module is used by the app and notebook 07.
 
 7\. Streamlit web app (uses the layer4 fine-tuned ResNet18)
 
